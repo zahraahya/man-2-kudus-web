@@ -1,0 +1,70 @@
+
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: #d1fae5;
+  color: #064e3b;
+}
+
+img {
+  display: block;
+}
+
+.ticker-window {
+  height: 44px;
+  overflow: hidden;
+}
+
+.ticker-track {
+  animation: ticker-roll 20s steps(5, end) infinite;
+}
+
+.ticker-item {
+  display: flex;
+  height: 44px;
+  min-height: 44px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ticker-window:hover .ticker-track,
+.ticker-window:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-roll {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-220px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ticker-track {
+    animation: none;
+  }
+
+  .ticker-item:nth-child(n + 2) {
+    display: none;
+  }
+}
