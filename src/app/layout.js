@@ -1,4 +1,3 @@
-
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -9,6 +8,12 @@ export const metadata = {
   title: "MAN 2 Kudus | Madrasah Akademik Berbasis Riset",
   description:
     "Profil, berita, prestasi, riset, layanan digital, dan informasi publik MAN 2 Kudus.",
+
+  icons: {
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
