@@ -1,20 +1,17 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-
-const menuUtama = [
-  { label: "Home", href: "/" },
-  { label: "Berita", href: "/berita" },
-];
+import { Suspense, useState } from "react";
 
 const menuProfil = [
   { label: "Tentang Kami", href: "/about#tentang-kami" },
   { label: "Keunggulan", href: "/about#keunggulan" },
+  { label: "Civitas Akademika", href: "/civitas-akademika" },
   {
-    label: "Civitas Akademik",
-    href: "/about#civitas-akademik",
+    label: "Ekstrakurikuler & Organisasi Murid",
+    href: "/ekstrakurikuler",
   },
 ];
 
@@ -26,40 +23,79 @@ const menuAkses = [
   { label: "PMB", href: "/pmb" },
   { label: "BSDA", href: "/bsda" },
   { label: "Layanan Publik", href: "/layanan" },
+  { label: "Login Admin", href: "/admin/login" },
 ];
 
-function DropdownMenu({ items, onNavigate }) {
+function MenuLink({ item, pathname, onClick }) {
+  const active =
+    item.href !== "/" &&
+    !item.href.includes("#") &&
+    pathname.startsWith(item.href);
+
   return (
-    <div className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-stone-200 bg-white p-2 shadow-xl">
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          onClick={onNavigate}
-          className="block rounded-lg px-3 py-2.5 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-950"
-        >
-          {item.label}
-        </Link>
-      ))}
+    <Link
+      href={item.href}
+      onClick={onClick}
+      className={`block rounded-lg px-3 py-2.5 text-sm transition ${
+        active
+          ? "bg-emerald-50 font-semibold text-emerald-950"
+          : "text-stone-700 hover:bg-emerald-50 hover:text-emerald-950"
+      }`}
+    >
+      {item.label}
+    </Link>
+  );
+}
+
+function Dropdown({ title, items, pathname }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className="rounded-full px-3 py-2.5 text-sm font-semibold text-stone-600 transition hover:bg-stone-100 hover:text-emerald-900"
+      >
+        {title} <span className="ml-1">{open ? "⌃" : "⌄"}</span>
+      </button>
+
+      {open && (
+        <>
+          <button
+            type="button"
+            aria-label="Tutup menu"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-40 cursor-default"
+          />
+
+          <div className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-stone-200 bg-white p-2 shadow-xl">
+            {items.map((item) => (
+              <MenuLink
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-export default function Navbar() {
-  const pathname = usePathname();
+function NavbarContent() {
+  const pathname = usePathname() || "/";
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileProfilOpen, setMobileProfilOpen] = useState(false);
+  const [mobileAksesOpen, setMobileAksesOpen] = useState(false);
 
-  const [menuBuka, setMenuBuka] = useState(false);
-  const [profilBuka, setProfilBuka] = useState(false);
-  const [aksesBuka, setAksesBuka] = useState(false);
-  const [profilMobileBuka, setProfilMobileBuka] = useState(false);
-  const [aksesMobileBuka, setAksesMobileBuka] = useState(false);
-
-  function tutupMenu() {
-    setMenuBuka(false);
-    setProfilBuka(false);
-    setAksesBuka(false);
-    setProfilMobileBuka(false);
-    setAksesMobileBuka(false);
+  function closeMobile() {
+    setMobileOpen(false);
+    setMobileProfilOpen(false);
+    setMobileAksesOpen(false);
   }
 
   return (
@@ -67,7 +103,7 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3.5 lg:px-8">
         <Link
           href="/"
-          onClick={tutupMenu}
+          onClick={closeMobile}
           className="flex shrink-0 items-center gap-3"
         >
           <img
@@ -80,7 +116,6 @@ export default function Navbar() {
             <p className="text-sm font-extrabold tracking-wide text-emerald-950">
               MAN 2 KUDUS
             </p>
-
             <p className="mt-1 hidden text-[10px] tracking-wide text-stone-500 sm:block">
               Madrasah Akademik Berbasis Riset
             </p>
@@ -88,111 +123,57 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1 lg:flex">
-          {menuUtama.slice(0, 1).map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`rounded-full px-3 py-2.5 text-sm font-semibold ${
-                pathname === item.href
-                  ? "bg-emerald-50 text-emerald-900"
-                  : "text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link
+            href="/"
+            className={`rounded-full px-3 py-2.5 text-sm font-semibold ${
+              pathname === "/"
+                ? "bg-emerald-50 text-emerald-900"
+                : "text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
+            }`}
+          >
+            Home
+          </Link>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setProfilBuka(!profilBuka);
-                setAksesBuka(false);
-              }}
-              aria-expanded={profilBuka}
-              className={`rounded-full px-3 py-2.5 text-sm font-semibold ${
-                pathname.startsWith("/about") || profilBuka
-                  ? "bg-emerald-50 text-emerald-900"
-                  : "text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
-              }`}
-            >
-              Profil
-              <span className="ml-2" aria-hidden="true">
-                {profilBuka ? "⌃" : "⌄"}
-              </span>
-            </button>
+          <Dropdown
+            title="Profil"
+            items={menuProfil}
+            pathname={pathname}
+          />
 
-            {profilBuka && (
-              <DropdownMenu
-                items={menuProfil}
-                onNavigate={() => setProfilBuka(false)}
-              />
-            )}
-          </div>
+          <Link
+            href="/berita"
+            className={`rounded-full px-3 py-2.5 text-sm font-semibold ${
+              pathname.startsWith("/berita")
+                ? "bg-emerald-50 text-emerald-900"
+                : "text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
+            }`}
+          >
+            Berita
+          </Link>
 
-          {menuUtama.slice(1).map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`rounded-full px-3 py-2.5 text-sm font-semibold ${
-                pathname.startsWith(item.href)
-                  ? "bg-emerald-50 text-emerald-900"
-                  : "text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setAksesBuka(!aksesBuka);
-                setProfilBuka(false);
-              }}
-              aria-expanded={aksesBuka}
-              className="rounded-full px-3 py-2.5 text-sm font-semibold text-stone-600 hover:bg-stone-100 hover:text-emerald-900"
-            >
-              Akses
-              <span className="ml-2" aria-hidden="true">
-                {aksesBuka ? "⌃" : "⌄"}
-              </span>
-            </button>
-
-            {aksesBuka && (
-              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-stone-200 bg-white p-2 shadow-xl">
-                {menuAkses.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setAksesBuka(false)}
-                    className="block rounded-lg px-3 py-2.5 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-950"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+          <Dropdown
+            title="Akses"
+            items={menuAkses}
+            pathname={pathname}
+          />
         </div>
 
         <button
           type="button"
-          aria-label={menuBuka ? "Tutup menu" : "Buka menu"}
-          aria-expanded={menuBuka}
-          onClick={() => setMenuBuka(!menuBuka)}
+          aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen((value) => !value)}
           className="rounded-lg border border-stone-200 px-3 py-2 text-xl text-emerald-950 lg:hidden"
         >
-          {menuBuka ? "×" : "☰"}
+          {mobileOpen ? "×" : "☰"}
         </button>
       </nav>
 
-      {menuBuka && (
+      {mobileOpen && (
         <div className="border-t border-stone-200 bg-[#fffefa] px-5 py-3 lg:hidden">
           <Link
             href="/"
-            onClick={tutupMenu}
+            onClick={closeMobile}
             className="block rounded-xl px-4 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-100"
           >
             Home
@@ -200,34 +181,29 @@ export default function Navbar() {
 
           <button
             type="button"
-            onClick={() => setProfilMobileBuka(!profilMobileBuka)}
-            aria-expanded={profilMobileBuka}
+            onClick={() => setMobileProfilOpen((value) => !value)}
+            aria-expanded={mobileProfilOpen}
             className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-semibold text-stone-700 hover:bg-stone-100"
           >
-            Profil
-            <span aria-hidden="true">
-              {profilMobileBuka ? "−" : "+"}
-            </span>
+            Profil <span>{mobileProfilOpen ? "−" : "+"}</span>
           </button>
 
-          {profilMobileBuka && (
+          {mobileProfilOpen && (
             <div className="ml-3 border-l border-emerald-200 pl-2">
               {menuProfil.map((item) => (
-                <Link
+                <MenuLink
                   key={item.href}
-                  href={item.href}
-                  onClick={tutupMenu}
-                  className="block rounded-lg px-3 py-2.5 text-sm text-stone-700 hover:bg-emerald-50"
-                >
-                  {item.label}
-                </Link>
+                  item={item}
+                  pathname={pathname}
+                  onClick={closeMobile}
+                />
               ))}
             </div>
           )}
 
           <Link
             href="/berita"
-            onClick={tutupMenu}
+            onClick={closeMobile}
             className="block rounded-xl px-4 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-100"
           >
             Berita
@@ -235,27 +211,22 @@ export default function Navbar() {
 
           <button
             type="button"
-            onClick={() => setAksesMobileBuka(!aksesMobileBuka)}
-            aria-expanded={aksesMobileBuka}
+            onClick={() => setMobileAksesOpen((value) => !value)}
+            aria-expanded={mobileAksesOpen}
             className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-semibold text-stone-700 hover:bg-stone-100"
           >
-            Akses
-            <span aria-hidden="true">
-              {aksesMobileBuka ? "−" : "+"}
-            </span>
+            Akses <span>{mobileAksesOpen ? "−" : "+"}</span>
           </button>
 
-          {aksesMobileBuka && (
+          {mobileAksesOpen && (
             <div className="ml-3 border-l border-emerald-200 pl-2">
               {menuAkses.map((item) => (
-                <Link
+                <MenuLink
                   key={item.href}
-                  href={item.href}
-                  onClick={tutupMenu}
-                  className="block rounded-lg px-3 py-2.5 text-sm text-stone-700 hover:bg-emerald-50"
-                >
-                  {item.label}
-                </Link>
+                  item={item}
+                  pathname={pathname}
+                  onClick={closeMobile}
+                />
               ))}
             </div>
           )}
@@ -270,7 +241,10 @@ export default function Navbar() {
             role="search"
             className="flex w-full max-w-lg items-center gap-2 rounded-full border border-stone-200 bg-white p-1 pl-4 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-100"
           >
-            <span aria-hidden="true" className="text-lg text-stone-400">
+            <span
+              aria-hidden="true"
+              className="text-lg text-stone-400"
+            >
               ⌕
             </span>
 
@@ -292,5 +266,20 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="h-[72px]"
+          aria-hidden="true"
+        />
+      }
+    >
+      <NavbarContent />
+    </Suspense>
   );
 }

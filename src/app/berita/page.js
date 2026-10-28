@@ -1,7 +1,12 @@
-
 import SectionTitle from "../../components/SectionTitle";
-import SearchableNews from "../../components/SearchableNews";
+import CmsNewsArchive from "../../components/CmsNewsArchive";
 import { berita } from "../../data/berita";
+
+export const metadata = {
+  title: "Berita | MAN 2 Kudus",
+  description:
+    "Informasi kegiatan madrasah, prestasi peserta didik, program pendidikan, riset, dan teknologi.",
+};
 
 export default function BeritaPage() {
   return (
@@ -22,7 +27,7 @@ export default function BeritaPage() {
           </p>
 
           <p className="mt-7 text-sm font-semibold text-emerald-900">
-            {berita.length} artikel tersedia
+            Arsip berita dan prestasi madrasah
           </p>
         </div>
       </section>
@@ -35,7 +40,7 @@ export default function BeritaPage() {
         />
 
         <div className="mt-9">
-          <SearchableNews items={berita} />
+          <CmsNewsArchive staticItems={berita} />
         </div>
       </section>
     </>

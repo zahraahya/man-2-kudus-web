@@ -1,4 +1,6 @@
+
 import "./globals.css";
+import { Suspense } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LatestTicker from "../components/LatestTicker";
@@ -7,7 +9,7 @@ import { berita } from "../data/berita";
 export const metadata = {
   title: "MAN 2 Kudus | Madrasah Akademik Berbasis Riset",
   description:
-    "Profil, berita, prestasi, riset, layanan digital, dan informasi publik MAN 2 Kudus.",
+    "Profil, berita, prestasi, guru dan tenaga kependidikan, ekstrakurikuler, serta layanan digital MAN 2 Kudus.",
 
   icons: {
     icon: "/images/favicon.png",
@@ -24,7 +26,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="id">
       <body className="min-h-screen bg-[#fffefa] text-stone-900 antialiased">
-        <Navbar />
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
+
         <LatestTicker items={beritaTicker} />
 
         <main>{children}</main>
